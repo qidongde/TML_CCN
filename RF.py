@@ -47,7 +47,7 @@ def RF_method():
     dtr = RandomForestRegressor(n_estimators=50, max_depth=6, random_state=9, n_jobs=-1)
     dtr.fit(x_train, y_train)
     dtr_y_pred = dtr.predict(x_test)
-    rmse = mean_squared_error(y_test, dtr_y_pred)
+    rmse = np.sqrt(mean_squared_error(y_test, dtr_y_pred))
 
     print('RMSE: ', rmse)
     end_time = time.time()
@@ -65,7 +65,7 @@ def gc_RF_method():
     gc = GridSearchCV(dtr, param_grid=param, cv=2)
     gc.fit(x_train, y_train)
     gc_y_pred = gc.predict(x_test)
-    rmse = mean_squared_error(y_test, gc_y_pred)
+    rmse = np.sqrt(mean_squared_error(y_test, gc_y_pred))
 
     print('RMSE: ', rmse)
     print("best_estimator_: ", gc.best_estimator_)
