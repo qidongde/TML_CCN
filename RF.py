@@ -6,6 +6,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import mean_squared_error
+from sklearn.metrics import r2_score
 
 import time
 
@@ -46,10 +47,19 @@ def RF_method():
 
     dtr = RandomForestRegressor(n_estimators=50, max_depth=6, random_state=9, n_jobs=-1)
     dtr.fit(x_train, y_train)
-    dtr_y_pred = dtr.predict(x_test)
-    rmse = np.sqrt(mean_squared_error(y_test, dtr_y_pred))
 
-    print('RMSE: ', rmse)
+    dtr_y_pred = dtr.predict(x_test)
+    test_rmse = np.sqrt(mean_squared_error(y_test, dtr_y_pred))
+    print('test_RMSE: ', test_rmse)
+    test_r2score = r2_score(y_test, dtr_y_pred)
+    print('test_r2: ', test_r2score)
+
+    dtr_y_pred_train = dtr.predict(x_train)
+    train_rmse = np.sqrt(mean_squared_error(y_train, dtr_y_pred_train))
+    print('train_RMSE: ', train_rmse)
+    train_r2score = r2_score(y_train, dtr_y_pred_train)
+    print('train_r2: ', train_r2score)
+
     end_time = time.time()
     time_consuming = end_time - start_time
     print(f'time consuming: {time_consuming:.2f}s')
@@ -64,11 +74,20 @@ def gc_RF_method():
              'n_jobs': [-1]}
     gc = GridSearchCV(dtr, param_grid=param, cv=2)
     gc.fit(x_train, y_train)
-    gc_y_pred = gc.predict(x_test)
-    rmse = np.sqrt(mean_squared_error(y_test, gc_y_pred))
-
-    print('RMSE: ', rmse)
     print("best_estimator_: ", gc.best_estimator_)
+
+    gc_y_pred = gc.predict(x_test)
+    test_rmse = np.sqrt(mean_squared_error(y_test, gc_y_pred))
+    print('test_RMSE: ', test_rmse)
+    test_r2score = r2_score(y_test, gc_y_pred)
+    print('test_r2: ', test_r2score)
+
+    gc_y_pred_train = gc.predict(x_train)
+    train_rmse = np.sqrt(mean_squared_error(y_train, gc_y_pred_train))
+    print('train_RMSE: ', train_rmse)
+    train_r2score = r2_score(y_train, gc_y_pred_train)
+    print('train_r2: ', train_r2score)
+
     end_time = time.time()
     time_consuming = end_time - start_time
     print(f'time consuming: {time_consuming:.2f}s')
