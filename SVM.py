@@ -7,6 +7,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.svm import LinearSVR
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import mean_squared_error
+from sklearn.metrics import r2_score
 
 import time
 
@@ -47,10 +48,19 @@ def SVM_method():
 
     svr = LinearSVR(epsilon=0.1, random_state=9, max_iter=20000)
     svr.fit(x_train, y_train)
-    svr_y_pred = svr.predict(x_test)
-    rmse = np.sqrt(mean_squared_error(y_test, svr_y_pred))
 
-    print('RMSE: ', rmse)
+    svr_y_pred = svr.predict(x_test)
+    test_rmse = np.sqrt(mean_squared_error(y_test, svr_y_pred))
+    print('test_RMSE: ', test_rmse)
+    test_r2score = r2_score(y_test, svr_y_pred)
+    print('test_r2: ', test_r2score)
+
+    svr_y_pred_train = svr.predict(x_train)
+    train_rmse = np.sqrt(mean_squared_error(y_train, svr_y_pred_train))
+    print('train_RMSE: ', train_rmse)
+    train_r2score = r2_score(y_train, svr_y_pred_train)
+    print('train_r2: ', train_r2score)
+
     end_time = time.time()
     time_consuming = end_time - start_time
     print(f'time consuming: {time_consuming:.2f}s')
@@ -64,11 +74,20 @@ def gc_SVM_method():
     param = {"epsilon": [0.05, 0.1, 0.2, 0.4], 'random_state': [9]}
     gc = GridSearchCV(dtr, param_grid=param, cv=2)
     gc.fit(x_train, y_train)
-    gc_y_pred = gc.predict(x_test)
-    rmse = np.sqrt(mean_squared_error(y_test, gc_y_pred))
-
-    print('RMSE: ', rmse)
     print("best_estimator_: ", gc.best_estimator_)
+
+    gc_y_pred = gc.predict(x_test)
+    test_rmse = np.sqrt(mean_squared_error(y_test, gc_y_pred))
+    print('test_RMSE: ', test_rmse)
+    test_r2score = r2_score(y_test, gc_y_pred)
+    print('test_r2: ', test_r2score)
+
+    gc_y_pred_train = gc.predict(x_train)
+    train_rmse = np.sqrt(mean_squared_error(y_train, gc_y_pred_train))
+    print('train_RMSE: ', train_rmse)
+    train_r2score = r2_score(y_train, gc_y_pred_train)
+    print('train_r2: ', train_r2score)
+
     end_time = time.time()
     time_consuming = end_time - start_time
     print(f'time consuming: {time_consuming:.2f}s')
