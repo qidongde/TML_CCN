@@ -45,6 +45,21 @@ def XGB_method():
     start_time = time.time()
     x_train, x_test, y_train, y_test = train_test_split_func()
 
+    xgbr = xgb.XGBRegressor(objective='reg:squarederror')
+    xgbr.fit(x_train, y_train)
+
+    xgbr_y_pred = xgbr.predict(x_test)
+    rmse = np.sqrt(mean_squared_error(y_test, xgbr_y_pred))
+    print('RMSE: ', rmse)
+    end_time = time.time()
+    time_consuming = end_time - start_time
+    print(f'time consuming: {time_consuming:.2f}s')
+
+
+def clf_XGB_method():
+    start_time = time.time()
+    x_train, x_test, y_train, y_test = train_test_split_func()
+
     params = {'max_depth': [3, 6, 10],
               'learning_rate': [0.01, 0.05, 0.1],
               'n_estimators': [100, 500, 1000],
@@ -66,3 +81,4 @@ def XGB_method():
 
 if __name__ == '__main__':
     XGB_method()
+    # clf_XGB_method()
