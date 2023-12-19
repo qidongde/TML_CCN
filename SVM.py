@@ -1,3 +1,4 @@
+import numpy
 from scipy.io import loadmat
 import pandas as pd
 import numpy as np
@@ -26,7 +27,7 @@ def train_test_split_func():
     x_data_chosen = input_final_last_merra
 
     test_flag = (time_traj[:, 0] == 2021) & (time_traj[:, 1] % 2 == 0)
-    train_flag = (time_traj[:, 0] != 2021) | (time_traj[:, 1] % 2 != 0)
+    train_flag = (time_traj[:, 0] != 2020) | (time_traj[:, 1] % 2 != 0)
 
     x_train_tmp = x_data_chosen[train_flag, :]
     x_test_tmp = x_data_chosen[test_flag, :]
@@ -47,7 +48,7 @@ def SVM_method():
     svr = LinearSVR(epsilon=0.1, random_state=9, max_iter=20000)
     svr.fit(x_train, y_train)
     svr_y_pred = svr.predict(x_test)
-    rmse = mean_squared_error(y_test, svr_y_pred)
+    rmse = np.sqrt(mean_squared_error(y_test, svr_y_pred))
 
     print('RMSE: ', rmse)
     end_time = time.time()
@@ -64,7 +65,7 @@ def gc_SVM_method():
     gc = GridSearchCV(dtr, param_grid=param, cv=2)
     gc.fit(x_train, y_train)
     gc_y_pred = gc.predict(x_test)
-    rmse = mean_squared_error(y_test, gc_y_pred)
+    rmse = np.sqrt(mean_squared_error(y_test, gc_y_pred))
 
     print('RMSE: ', rmse)
     print("best_estimator_: ", gc.best_estimator_)
