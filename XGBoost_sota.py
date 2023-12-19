@@ -7,6 +7,7 @@ from sklearn.preprocessing import StandardScaler
 import xgboost as xgb
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import mean_squared_error
+from sklearn.metrics import r2_score
 
 import time
 
@@ -49,8 +50,17 @@ def XGB_method():
     xgbr.fit(x_train, y_train)
 
     xgbr_y_pred = xgbr.predict(x_test)
-    rmse = np.sqrt(mean_squared_error(y_test, xgbr_y_pred))
-    print('RMSE: ', rmse)
+    test_rmse = np.sqrt(mean_squared_error(y_test, xgbr_y_pred))
+    print('test_RMSE: ', test_rmse)
+    test_r2score = r2_score(y_test, xgbr_y_pred)
+    print('test_r2: ', test_r2score)
+
+    xgbr_y_pred_train = xgbr.predict(x_train)
+    train_rmse = np.sqrt(mean_squared_error(y_train, xgbr_y_pred_train))
+    print('train_RMSE: ', train_rmse)
+    train_r2score = r2_score(y_train, xgbr_y_pred_train)
+    print('train_r2: ', train_r2score)
+
     end_time = time.time()
     time_consuming = end_time - start_time
     print(f'time consuming: {time_consuming:.2f}s')
@@ -70,10 +80,20 @@ def clf_XGB_method():
                        scoring='neg_mean_squared_error',
                        verbose=1)
     clf.fit(x_train, y_train)
-    xgbr_y_pred = clf.predict(x_test)
     print("Best parameters:", clf.best_params_)
-    rmse = np.sqrt(mean_squared_error(y_test, xgbr_y_pred))
-    print('RMSE: ', rmse)
+
+    xgbr_y_pred = clf.predict(x_test)
+    test_rmse = np.sqrt(mean_squared_error(y_test, xgbr_y_pred))
+    print('test_RMSE: ', test_rmse)
+    test_r2score = r2_score(y_test, xgbr_y_pred)
+    print('test_r2: ', test_r2score)
+
+    xgbr_y_pred_train = clf.predict(x_train)
+    train_rmse = np.sqrt(mean_squared_error(y_train, xgbr_y_pred_train))
+    print('train_RMSE: ', train_rmse)
+    train_r2score = r2_score(y_train, xgbr_y_pred_train)
+    print('train_r2: ', train_r2score)
+
     end_time = time.time()
     time_consuming = end_time - start_time
     print(f'time consuming: {time_consuming:.2f}s')
