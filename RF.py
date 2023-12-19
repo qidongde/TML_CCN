@@ -26,7 +26,7 @@ def train_test_split_func():
     x_data_chosen = input_final_last_merra
 
     test_flag = (time_traj[:, 0] == 2021) & (time_traj[:, 1] % 2 == 0)
-    train_flag = (time_traj[:, 0] != 2020) | (time_traj[:, 1] % 2 != 0)
+    train_flag = (time_traj[:, 0] != 2021) | (time_traj[:, 1] % 2 != 0)
 
     x_train_tmp = x_data_chosen[train_flag, :]
     x_test_tmp = x_data_chosen[test_flag, :]
