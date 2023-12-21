@@ -20,11 +20,11 @@ def train_test_split_func():
     input_final_ave = raw_data['input_final_ave']
     input_final_ave_weight = raw_data['input_final_ave_weight']
     input_final_last_merra = raw_data['input_final_last'][0][0][0]
-    input_final_last_iwith_local = raw_data['input_final_last'][0][0][1]
+    input_final_last_with_local = raw_data['input_final_last'][0][0][1]
     target_CCN = raw_data['target_CCN']
     time_traj = raw_data['time_traj']
 
-    # x_data_chosen = input_final_ave_weight[:, :, 5]
+    # x_data_chosen = input_final_ave[:, :, 5]
     x_data_chosen = input_final_last_merra
 
     test_flag = (time_traj[:, 0] == 2021) & (time_traj[:, 1] % 2 == 0)
@@ -46,7 +46,7 @@ def SVM_method():
     start_time = time.time()
     x_train, x_test, y_train, y_test = train_test_split_func()
 
-    svr = LinearSVR(epsilon=0.1, random_state=9, max_iter=20000)
+    svr = LinearSVR(epsilon=0.05, random_state=9, max_iter=20000)
     svr.fit(x_train, y_train)
 
     svr_y_pred = svr.predict(x_test)
@@ -70,8 +70,8 @@ def gc_SVM_method():
     start_time = time.time()
     x_train, x_test, y_train, y_test = train_test_split_func()
 
-    dtr = LinearSVR(dual='auto')
-    param = {"epsilon": [0.05, 0.1, 0.2, 0.4], 'random_state': [9]}
+    dtr = LinearSVR()
+    param = {"epsilon": [0.005, 0.01, 0.02, 0.05, 0.1], 'random_state': [9]}
     gc = GridSearchCV(dtr, param_grid=param, cv=2)
     gc.fit(x_train, y_train)
     print("best_estimator_: ", gc.best_estimator_)
@@ -94,5 +94,5 @@ def gc_SVM_method():
 
 
 if __name__ == '__main__':
-    SVM_method()
-    # gc_SVM_method()
+    # SVM_method()
+    gc_SVM_method()
