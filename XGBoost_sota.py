@@ -20,12 +20,12 @@ def train_test_split_func():
     input_final_ave = raw_data['input_final_ave']
     input_final_ave_weight = raw_data['input_final_ave_weight']
     input_final_last_merra = raw_data['input_final_last'][0][0][0]
-    input_final_last_iwith_local = raw_data['input_final_last'][0][0][1]
+    input_final_last_with_local = raw_data['input_final_last'][0][0][1]
     target_CCN = raw_data['target_CCN']
     time_traj = raw_data['time_traj']
 
-    # x_data_chosen = input_final_ave_weight[:, :, 5]
-    x_data_chosen = input_final_last_merra
+    x_data_chosen = input_final_ave_weight[:, :, 5]
+    # x_data_chosen = input_final_last_with_local
 
     test_flag = (time_traj[:, 0] == 2021) & (time_traj[:, 1] % 2 == 0)
     train_flag = (time_traj[:, 0] != 2021) | (time_traj[:, 1] % 2 != 0)
