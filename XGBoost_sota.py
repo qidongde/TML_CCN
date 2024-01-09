@@ -1,4 +1,3 @@
-import numpy
 from scipy.io import loadmat
 import pandas as pd
 import numpy as np
@@ -8,6 +7,8 @@ import xgboost as xgb
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import r2_score
+from scipy.stats import pearsonr
+import math
 
 import time
 
@@ -46,8 +47,8 @@ def train_test_split_func(num):
 
 
 def XGB_method():
-    start_time = time.time()
     for num in range(14):
+        start_time = time.time()
         print(f'The XGBoost result of num{num + 1}:')
         x_train, x_test, y_train, y_test = train_test_split_func(num)
 
@@ -57,13 +58,13 @@ def XGB_method():
         xgbr_y_pred = xgbr.predict(x_test)
         test_rmse = np.sqrt(mean_squared_error(y_test, xgbr_y_pred))
         print('test_RMSE: ', test_rmse)
-        test_r2score = r2_score(y_test, xgbr_y_pred)
+        test_r2score = math.pow(pearsonr(y_test, xgbr_y_pred)[0], 2)
         print('test_r2: ', test_r2score)
 
         xgbr_y_pred_train = xgbr.predict(x_train)
         train_rmse = np.sqrt(mean_squared_error(y_train, xgbr_y_pred_train))
         print('train_RMSE: ', train_rmse)
-        train_r2score = r2_score(y_train, xgbr_y_pred_train)
+        train_r2score = math.pow(pearsonr(y_train, xgbr_y_pred_train)[0], 2)
         print('train_r2: ', train_r2score)
 
         end_time = time.time()
@@ -73,14 +74,14 @@ def XGB_method():
 
 
 def clf_XGB_method():
-    start_time = time.time()
     for num in range(14):
+        start_time = time.time()
         print(f'The XGBoost result of num{num + 1}:')
         x_train, x_test, y_train, y_test = train_test_split_func(num)
 
         params = {'max_depth': [3, 6, 10],
                   'learning_rate': [0.01, 0.05, 0.1],
-                  'n_estimators': [100, 500, 1000],
+                  'n_estimators': [100, 500, 600, 700, 800, 1000],
                   'colsample_bytree': [0.3, 0.7]}
         xgbr = xgb.XGBRegressor(seed=20)
         clf = GridSearchCV(estimator=xgbr,
@@ -93,13 +94,13 @@ def clf_XGB_method():
         xgbr_y_pred = clf.predict(x_test)
         test_rmse = np.sqrt(mean_squared_error(y_test, xgbr_y_pred))
         print('test_RMSE: ', test_rmse)
-        test_r2score = r2_score(y_test, xgbr_y_pred)
+        test_r2score = math.pow(pearsonr(y_test, xgbr_y_pred)[0], 2)
         print('test_r2: ', test_r2score)
 
         xgbr_y_pred_train = clf.predict(x_train)
         train_rmse = np.sqrt(mean_squared_error(y_train, xgbr_y_pred_train))
         print('train_RMSE: ', train_rmse)
-        train_r2score = r2_score(y_train, xgbr_y_pred_train)
+        train_r2score = math.pow(pearsonr(y_train, xgbr_y_pred_train)[0], 2)
         print('train_r2: ', train_r2score)
 
         end_time = time.time()
