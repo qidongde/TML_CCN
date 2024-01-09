@@ -7,6 +7,8 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import r2_score
+from scipy.stats import pearsonr
+import math
 
 import time
 
@@ -45,8 +47,8 @@ def train_test_split_func(num):
 
 
 def RF_method():
-    start_time = time.time()
     for num in range(14):
+        start_time = time.time()
         print(f'The RF result of num{num + 1}:')
         x_train, x_test, y_train, y_test = train_test_split_func(num)
 
@@ -56,13 +58,15 @@ def RF_method():
         dtr_y_pred = dtr.predict(x_test)
         test_rmse = np.sqrt(mean_squared_error(y_test, dtr_y_pred))
         print('test_RMSE: ', test_rmse)
-        test_r2score = r2_score(y_test, dtr_y_pred)
+        # test_r2score = r2_score(y_test, dtr_y_pred)
+        test_r2score = math.pow(pearsonr(y_test, dtr_y_pred)[0], 2)
         print('test_r2: ', test_r2score)
 
         dtr_y_pred_train = dtr.predict(x_train)
         train_rmse = np.sqrt(mean_squared_error(y_train, dtr_y_pred_train))
         print('train_RMSE: ', train_rmse)
-        train_r2score = r2_score(y_train, dtr_y_pred_train)
+        # train_r2score = r2_score(y_train, dtr_y_pred_train)
+        train_r2score = math.pow(pearsonr(y_train, dtr_y_pred_train)[0], 2)
         print('train_r2: ', train_r2score)
 
         end_time = time.time()
@@ -72,8 +76,8 @@ def RF_method():
 
 
 def gc_RF_method():
-    start_time = time.time()
     for num in range(14):
+        start_time = time.time()
         print(f'The RF result of num{num + 1}:')
         x_train, x_test, y_train, y_test = train_test_split_func(num)
 
@@ -87,13 +91,15 @@ def gc_RF_method():
         gc_y_pred = gc.predict(x_test)
         test_rmse = np.sqrt(mean_squared_error(y_test, gc_y_pred))
         print('test_RMSE: ', test_rmse)
-        test_r2score = r2_score(y_test, gc_y_pred)
+        # test_r2score = r2_score(y_test, gc_y_pred)
+        test_r2score = math.pow(pearsonr(y_test, gc_y_pred)[0], 2)
         print('test_r2: ', test_r2score)
 
         gc_y_pred_train = gc.predict(x_train)
         train_rmse = np.sqrt(mean_squared_error(y_train, gc_y_pred_train))
         print('train_RMSE: ', train_rmse)
-        train_r2score = r2_score(y_train, gc_y_pred_train)
+        # train_r2score = r2_score(y_train, gc_y_pred_train)
+        train_r2score = math.pow(pearsonr(y_train, gc_y_pred_train)[0], 2)
         print('train_r2: ', train_r2score)
 
         end_time = time.time()
@@ -103,5 +109,5 @@ def gc_RF_method():
 
 
 if __name__ == '__main__':
-    RF_method()
-    # gc_RF_method()
+    # RF_method()
+    gc_RF_method()
