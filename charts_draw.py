@@ -70,27 +70,27 @@ XGBoost_R2_TRAIN_AVE_WEIGHT = [0.585907675, 0.623428788, 0.603407583, 0.66896206
 XGBoost_R2_TRAIN_LAST_MERRA = 0.572320223181084
 XGBoost_R2_TRAIN_LAST_LOCAL = 0.611311885919627
 
-ANN_RMSE_TEST_AVE = [0.22757294, 0.216513597, 0.211840518, 0.211997136, 0.219497498, 0.239360149]
-ANN_RMSE_TEST_AVE_WEIGHT = [0.216732381, 0.212999297, 0.226801011, 0.232858677, 0.200977299, 0.207062864]
-ANN_RMSE_TEST_LAST_MERRA = 0.250099026626613
-ANN_RMSE_TEST_LAST_LOCAL = 0.259484522025558
+ANN_RMSE_TEST_AVE = [0.234490566, 0.21541352, 0.219248834, 0.224454967, 0.221955454, 0.232029015]
+ANN_RMSE_TEST_AVE_WEIGHT = [0.22932936, 0.211553705, 0.22172829, 0.222388406, 0.227143082, 0.219051689]
+ANN_RMSE_TEST_LAST_MERRA = 0.240048878733676
+ANN_RMSE_TEST_LAST_LOCAL = 0.239672666255928
 ANN_RMSE_TEST_list = ANN_RMSE_TEST_AVE + ANN_RMSE_TEST_AVE_WEIGHT + [ANN_RMSE_TEST_LAST_MERRA, ANN_RMSE_TEST_LAST_LOCAL]
 
-ANN_RMSE_TRAIN_AVE = [0.228937791, 0.22208666, 0.219749012, 0.22163896, 0.231801215, 0.24002578]
-ANN_RMSE_TRAIN_AVE_WEIGHT = [0.223731636, 0.221493619, 0.219428483, 0.215268188, 0.218765811, 0.217703286]
-ANN_RMSE_TRAIN_LAST_MERRA = 0.239445917163214
-ANN_RMSE_TRAIN_LAST_LOCAL = 0.237701072114607
+ANN_RMSE_TRAIN_AVE = [0.225711559, 0.224384383, 0.218544864, 0.223391514, 0.231530493, 0.241697737]
+ANN_RMSE_TRAIN_AVE_WEIGHT = [0.22424123, 0.224117458, 0.218220185, 0.215765781, 0.219432267, 0.21879857]
+ANN_RMSE_TRAIN_LAST_MERRA = 0.238667301532781
+ANN_RMSE_TRAIN_LAST_LOCAL = 0.237268228475617
 
-ANN_R2_TEST_AVE = [0.414702563, 0.458232102, 0.488733108, 0.478816817, 0.456573914, 0.378306506]
-ANN_R2_TEST_AVE_WEIGHT = [0.46042276, 0.47675476, 0.464886625, 0.469597365, 0.53655642, 0.513959833]
-ANN_R2_TEST_LAST_MERRA = 0.299167389014255
-ANN_R2_TEST_LAST_LOCAL = 0.272633670636855
+ANN_R2_TEST_AVE = [0.407896739, 0.50539417, 0.493743054, 0.471112994, 0.438930156, 0.391114638]
+ANN_R2_TEST_AVE_WEIGHT = [0.399946269, 0.487989548, 0.439185597, 0.446103542, 0.475306789, 0.465788871]
+ANN_R2_TEST_LAST_MERRA = 0.360528147833563
+ANN_R2_TEST_LAST_LOCAL = 0.343354386467037
 ANN_R2_TEST_list = ANN_R2_TEST_AVE + ANN_R2_TEST_AVE_WEIGHT + [ANN_R2_TEST_LAST_MERRA, ANN_R2_TEST_LAST_LOCAL]
 
-ANN_R2_TRAIN_AVE = [0.394877244, 0.430359565, 0.441669433, 0.432740667, 0.37925544, 0.33442636]
-ANN_R2_TRAIN_AVE_WEIGHT = [0.421395684, 0.433222827, 0.4437252, 0.464175543, 0.447079866, 0.452427377]
-ANN_R2_TRAIN_LAST_MERRA = 0.337840536694011
-ANN_R2_TRAIN_LAST_LOCAL = 0.347199742594233
+ANN_R2_TRAIN_AVE = [0.411853439, 0.418377323, 0.448093781, 0.423594353, 0.380424503, 0.325064678]
+ANN_R2_TRAIN_AVE_WEIGHT = [0.419284621, 0.42014764, 0.449627279, 0.462097689, 0.443602318, 0.446706774]
+ANN_R2_TRAIN_LAST_MERRA = 0.34258441449993
+ANN_R2_TRAIN_LAST_LOCAL = 0.349547514442645
 
 
 def Test_RMSE():
@@ -119,6 +119,7 @@ def Test_RMSE():
     # plt.grid()
     plt.legend(bbox_to_anchor=(1.05, 0), loc=3, borderaxespad=0)
     plt.gcf().subplots_adjust(left=0.12, right=0.65)
+    plt.xticks([25, 49, 73, 121, 169, 241])
     plt.show()
 
 
@@ -148,6 +149,7 @@ def Test_R2():
     # plt.grid()
     plt.legend(bbox_to_anchor=(1.05, 0), loc=3, borderaxespad=0)
     plt.gcf().subplots_adjust(left=0.12, right=0.65)
+    plt.xticks([25, 49, 73, 121, 169, 241])
     # plt.tight_layout()
     plt.show()
 
@@ -161,31 +163,38 @@ SVM_train_y_pre = np.load('output_save/SVM_train_y_pre.npy')
 XGBoost_test_y_pre = np.load('output_save/XGBoost_test_y_pre.npy')
 XGBoost_train_y_pre = np.load('output_save/XGBoost_train_y_pre.npy')
 ANN_test_y_pre = np.load('output_save/ANN_test_y_pre.npy')
-ANN_train_y_pre = np.load('output_save/ANN_train_y_pre.npy')
+
+
+# ANN_train_y_pre = np.load('output_save/ANN_train_y_pre.npy')
 
 
 def y_pre_true_compare():
-    input_num = 13
-    model_type = 'ANN'
-    Y_PRE_dic = {'RF': RF_test_y_pre, 'SVM': SVM_test_y_pre, 'XGBoost': XGBoost_test_y_pre,
-                 'ANN': ANN_test_y_pre}
-    x1 = np.power(10, test_y_true[:, -1])
-    y1 = np.power(10, Y_PRE_dic[model_type][input_num, :])
-    # print(y1)
-    time_step_list = ['AVE 25', 'AVE 49', 'AVE 73', 'AVE 121', 'AVE 169', 'AVE 242', 'AVE WEIGHT 25', 'AVE WEIGHT 49',
-                      'AVE WEIGHT 73', 'AVE WEIGHT 121', 'AVE WEIGHT 169', 'AVE WEIGHT 242', 'LAST MERRA', 'LAST LOCAL']
+    model_type = 'XGBoost'
+    time_step_list = ['AVE 25', 'AVE 49', 'AVE 73', 'AVE 121', 'AVE 169', 'AVE 242', 'AVE WEIGHT 25',
+                      'AVE WEIGHT 49',
+                      'AVE WEIGHT 73', 'AVE WEIGHT 121', 'AVE WEIGHT 169', 'AVE WEIGHT 242', 'LAST MERRA',
+                      'LAST LOCAL']
     rmse_dic = {'RF': RF_RMSE_TEST_list, 'SVM': SVM_RMSE_TEST_list, 'XGBoost': XGBoost_RMSE_TEST_list,
                 'ANN': ANN_RMSE_TEST_list}
     r2_dic = {'RF': RF_R2_TEST_list, 'SVM': SVM_R2_TEST_list, 'XGBoost': XGBoost_R2_TEST_list,
               'ANN': ANN_R2_TEST_list}
-    plt.text(800, 0, f'RMSE = {rmse_dic[model_type][input_num]:.4f}\nR2 = {r2_dic[model_type][input_num]:.4f}',
-             ha='left')
-    plt.title(f'{model_type} TEST {time_step_list[input_num]}')
-    plt.xlabel("CCN true")
-    plt.ylabel("CCN pre")
-    plt.scatter(x1, y1, c='#00BFFF', marker='.')
-    plt.plot(x1, x1, c='black', linewidth=1.0)
-    plt.axis('square')
+    y_pre_dic = {'RF': RF_test_y_pre, 'SVM': SVM_test_y_pre, 'XGBoost': XGBoost_test_y_pre,
+                 'ANN': ANN_test_y_pre}
+    for input_num in range(12, 14):
+        plt.subplot(1, 2, input_num - 11)
+        x1 = np.power(10, test_y_true[:, -1])
+        y1 = np.power(10, y_pre_dic[model_type][input_num, :])
+        # print(y1)
+        plt.title(f'{model_type} TEST {time_step_list[input_num]}')
+        plt.xscale('log')
+        plt.yscale('log')
+        plt.xlabel("CCN true")
+        plt.ylabel("CCN pre")
+        plt.scatter(x1, y1, c='#00BFFF', marker='.')
+        plt.plot(x1, x1, c='black', linewidth=1.0)
+        plt.axis('square')
+        plt.annotate(f'RMSE = {rmse_dic[model_type][input_num]:.4f}\nR2 = {r2_dic[model_type][input_num]:.4f}',
+                     xy=(200, 20))
     plt.show()
 
 
@@ -212,15 +221,16 @@ def y_time_ob():
     axes.scatter(x1, y4, c='#32CD32', marker='x', label='CCN_XGBoost_pre')
     axes.scatter(x1, y5, c='#9400D3', marker='x', label='CCN_ANN_pre')
     axes.scatter(x1, y1, c='black', marker='.', label='CCN_true')
-    axes.set_aspect(aspect=1/60)
+    axes.set_aspect(aspect=6 / 1)
     plt.legend(bbox_to_anchor=(1.05, 0), loc=3, borderaxespad=0)
     plt.gcf().subplots_adjust(left=0.12, right=0.75)
     plt.xticks(x_stick, ['1', '4', '7', '10', '13', '16', '19', '22', '25', '28'])
+    plt.yscale('log')
     plt.show()
 
 
 if __name__ == '__main__':
     # Test_RMSE()
     # Test_R2()
-    # y_pre_true_compare()
-    y_time_ob()
+    y_pre_true_compare()
+    # y_time_ob()
