@@ -99,7 +99,7 @@ def ANN_method():
         train_dataset = DataPairsDataset(train_pairs)
         test_dataset = DataPairsDataset(test_pairs)
         train_dataloader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True, drop_last=True)
-        test_dataloader = DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=True, drop_last=True)
+        test_dataloader = DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=False, drop_last=True)
 
         ANN_model = ANN_simple()
         myadam = torch.optim.Adam(ANN_model.parameters(), lr=learning_rate)
