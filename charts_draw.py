@@ -163,6 +163,10 @@ SVM_train_y_pre = np.load('output_save/SVM_train_y_pre.npy')
 XGBoost_test_y_pre = np.load('output_save/XGBoost_test_y_pre.npy')
 XGBoost_train_y_pre = np.load('output_save/XGBoost_train_y_pre.npy')
 ANN_test_y_pre = np.load('output_save/ANN_test_y_pre.npy')
+XGBoost_daily_test_y_pre = np.load('output_save/XGBoost_test_y_pre_daily.npy')
+SVM_daily_test_y_pre = np.load('output_save/SVM_test_y_pre_daily.npy')
+RF_daily_test_y_pre = np.load('output_save/RF_test_y_pre_daily.npy')
+ANN_daily_test_y_pre = np.load('output_save/ANN_test_y_pre_daily.npy')
 
 
 # ANN_train_y_pre = np.load('output_save/ANN_train_y_pre.npy')
@@ -179,7 +183,7 @@ def y_pre_true_compare():
     r2_dic = {'RF': RF_R2_TEST_list, 'SVM': SVM_R2_TEST_list, 'XGBoost': XGBoost_R2_TEST_list,
               'ANN': ANN_R2_TEST_list}
     y_pre_dic = {'RF': RF_test_y_pre, 'SVM': SVM_test_y_pre, 'XGBoost': XGBoost_test_y_pre,
-                 'ANN': ANN_test_y_pre}
+                 'ANN': ANN_test_y_pre, 'XGBoost_daily': XGBoost_daily_test_y_pre}
     for input_num in range(12, 14):
         plt.subplot(1, 2, input_num - 11)
         x1 = np.power(10, test_y_true[:, -1])
@@ -195,6 +199,31 @@ def y_pre_true_compare():
         plt.axis('square')
         plt.annotate(f'RMSE = {rmse_dic[model_type][input_num]:.4f}\nR2 = {r2_dic[model_type][input_num]:.4f}',
                      xy=(200, 20))
+    plt.show()
+
+
+def y_pre_true_compare_daily():
+    y_pre_dic = {'RF': RF_test_y_pre, 'SVM': SVM_test_y_pre, 'XGBoost': XGBoost_test_y_pre,
+                 'ANN': ANN_test_y_pre, 'XGBoost_daily': XGBoost_daily_test_y_pre, 'RF_daily': RF_daily_test_y_pre,
+                 'SVM_daily': SVM_daily_test_y_pre, 'ANN_daily': ANN_daily_test_y_pre}
+
+    model_type = 'ANN_daily'
+
+    for input_num in range(6):
+        plt.subplot(1, 6, input_num + 1)
+        x1 = np.power(10, test_y_true[:, -1])
+        y1 = np.power(10, y_pre_dic[model_type][input_num, :])
+        # print(y1)
+        plt.title(f'{model_type} TEST {10 - input_num}days')
+        plt.xscale('log')
+        plt.yscale('log')
+        plt.xlabel("CCN true")
+        plt.ylabel("CCN pre")
+        plt.scatter(x1, y1, c='#00BFFF', marker='.')
+        plt.plot(x1, x1, c='black', linewidth=1.0)
+        plt.axis('square')
+        # plt.annotate(f'RMSE = {rmse_dic[model_type][input_num]:.4f}\nR2 = {r2_dic[model_type][input_num]:.4f}',
+        #              xy=(200, 20))
     plt.show()
 
 
@@ -232,5 +261,6 @@ def y_time_ob():
 if __name__ == '__main__':
     # Test_RMSE()
     # Test_R2()
-    y_pre_true_compare()
+    # y_pre_true_compare()
     # y_time_ob()
+    y_pre_true_compare_daily()
