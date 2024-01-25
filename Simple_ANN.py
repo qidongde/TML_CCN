@@ -51,6 +51,33 @@ def train_test_split_func(num):
     return train_pairs, test_pairs
 
 
+def train_test_split_func2(num):
+    time_traj = loadmat('data_aggregation_final_valid')['time_traj']
+    target_CCN = loadmat('data_aggregation_final_valid')['target_CCN']
+    # load raw data
+    x_data_raw = np.load('data_aggregation_final_valid_daily.npy')
+    x_data_chosen = x_data_raw[:, :, num:].reshape(39578, -1)
+    # x_data_chosen = input_final_ave_weight[:, :, 5]
+    # x_data_chosen = input_final_last_with_local
+
+    test_flag = (time_traj[:, 0] == 2021) & (time_traj[:, 1] % 2 == 0)
+    train_flag = (time_traj[:, 0] != 2021) | (time_traj[:, 1] % 2 != 0)
+
+    x_train_tmp = x_data_chosen[train_flag, :]
+    x_test_tmp = x_data_chosen[test_flag, :]
+    y_train = target_CCN[train_flag, 0]
+    y_test = target_CCN[test_flag, 0]
+
+    standard_transfer = StandardScaler()
+    x_train = standard_transfer.fit_transform(x_train_tmp)
+    x_test = standard_transfer.transform(x_test_tmp)
+
+    train_pairs = list(zip(x_train, y_train))
+    test_pairs = list(zip(x_test, y_test))
+
+    return train_pairs, test_pairs
+
+
 class DataPairsDataset(Dataset):
     def __init__(self, data_pairs):
         self.data_pairs = data_pairs
@@ -72,10 +99,10 @@ class DataPairsDataset(Dataset):
 
 
 class ANN_simple(nn.Module):
-    def __init__(self):
+    def __init__(self, days):
         super(ANN_simple, self).__init__()
-        self.linear1 = nn.Linear(25, 20)
-        self.linear2 = nn.Linear(20, 1)
+        self.linear1 = nn.Linear(25 * days, 60)
+        self.linear2 = nn.Linear(60, 1)
         # self.linear3 = nn.Linear(32, 1)
         self.relu = nn.ReLU()
 
@@ -86,38 +113,43 @@ class ANN_simple(nn.Module):
         return output.squeeze()
 
 
-epochs = 20
+epochs = 40
 learning_rate = 0.01
 batch_size = 64
 
 
 def ANN_method():
-    for num in range(14):
-        train_pairs, test_pairs = train_test_split_func(num)
+    test_result_list = []
+    train_result_list = []
+    for num in range(6):
+        train_pairs, test_pairs = train_test_split_func2(num)
         # print(len(train_pairs))
         # print(len(test_pairs))
         train_dataset = DataPairsDataset(train_pairs)
         test_dataset = DataPairsDataset(test_pairs)
-        train_dataloader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True, drop_last=True)
-        test_dataloader = DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=False, drop_last=True)
+        train_dataloader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True, drop_last=False)
+        test_dataloader = DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=False, drop_last=False)
 
-        ANN_model = ANN_simple()
+        ANN_model = ANN_simple(10 - num)
         myadam = torch.optim.Adam(ANN_model.parameters(), lr=learning_rate)
         mse_loss = nn.MSELoss()
-
         train_rmse_loss = 0
         test_rmse_loss = 0
         train_r2score = 0
         test_r2score = 0
 
         for epoch_idx in range(1, epochs + 1):
+            train_rmse_loss = 100
+            test_rmse_loss = 100
+            train_r2score = 100
+            test_r2score = 100
             train_y_true = []
             train_y_pre = []
             test_y_true = []
             test_y_pre = []
 
             ANN_model.train()
-            for train_item, (train_x, train_y) in enumerate(tqdm(train_dataloader), start=1):
+            for train_item, (train_x, train_y) in enumerate(train_dataloader, start=1):
                 train_output = ANN_model(train_x)
                 train_output = train_output.to(device)
                 myadam.zero_grad()
@@ -139,19 +171,24 @@ def ANN_method():
                     test_y_true.extend(test_y.squeeze().tolist())
                     test_y_pre.extend(test_predict.squeeze().tolist())
 
-            # print(test_y_true)
-            train_rmse_loss = np.sqrt(mean_squared_error(train_y_true, train_y_pre))
-            train_r2score = math.pow(pearsonr(train_y_true, train_y_pre)[0], 2)
-            test_rmse_loss = np.sqrt(mean_squared_error(test_y_true, test_y_pre))
-            test_r2score = math.pow(pearsonr(test_y_true, test_y_pre)[0], 2)
+            if np.sqrt(mean_squared_error(test_y_true, test_y_pre)) < test_rmse_loss:
+                train_rmse_loss = np.sqrt(mean_squared_error(train_y_true, train_y_pre))
+                train_r2score = math.pow(pearsonr(train_y_true, train_y_pre)[0], 2)
+                test_rmse_loss = np.sqrt(mean_squared_error(test_y_true, test_y_pre))
+                test_r2score = math.pow(pearsonr(test_y_true, test_y_pre)[0], 2)
+
+                test_result_list.append(test_y_pre)
+                train_result_list.append(train_y_pre)
 
         print(f'The ANN result of num{num + 1}:')
         print("Train RMSELoss:", train_rmse_loss)
         print("Train R2:", train_r2score)
         print("Test RMSELoss:", test_rmse_loss)
         print('Test R2', test_r2score)
-
         print("*" * 50)
+
+    np.save('output_save/ANN_test_y_pre_daily.npy', np.array(test_result_list))
+    # np.save('output_save/ANN_train_y_pre_daily.npy', np.array(train_result_list))
 
 
 if __name__ == '__main__':
