@@ -46,11 +46,35 @@ def train_test_split_func(num):
     return x_train, x_test, y_train, y_test
 
 
+def train_test_split_func2(num):
+    time_traj = loadmat('data_aggregation_final_valid')['time_traj']
+    target_CCN = loadmat('data_aggregation_final_valid')['target_CCN']
+    # load raw data
+    x_data_raw = np.load('data_aggregation_final_valid_daily.npy')
+    x_data_chosen = x_data_raw[:, :, num:].reshape(39578, -1)
+    # x_data_chosen = input_final_ave_weight[:, :, 5]
+    # x_data_chosen = input_final_last_with_local
+
+    test_flag = (time_traj[:, 0] == 2021) & (time_traj[:, 1] % 2 == 0)
+    train_flag = (time_traj[:, 0] != 2021) | (time_traj[:, 1] % 2 != 0)
+
+    x_train_tmp = x_data_chosen[train_flag, :]
+    x_test_tmp = x_data_chosen[test_flag, :]
+    y_train = target_CCN[train_flag, 0]
+    y_test = target_CCN[test_flag, 0]
+
+    standard_transfer = StandardScaler()
+    x_train = standard_transfer.fit_transform(x_train_tmp)
+    x_test = standard_transfer.transform(x_test_tmp)
+
+    return x_train, x_test, y_train, y_test
+
+
 def SVM_method():
-    for num in range(14):
+    for num in range(6):
         start_time = time.time()
         print(f'The SVM result of num{num + 1}:')
-        x_train, x_test, y_train, y_test = train_test_split_func(num)
+        x_train, x_test, y_train, y_test = train_test_split_func2(num)
 
         svr = LinearSVR(epsilon=0.05, random_state=9, max_iter=20000)
         svr.fit(x_train, y_train)
@@ -76,10 +100,12 @@ def SVM_method():
 
 
 def gc_SVM_method():
-    for num in range(14):
+    test_result_list = []
+    train_result_list = []
+    for num in range(6):
         start_time = time.time()
         print(f'The SVM result of num{num + 1}:')
-        x_train, x_test, y_train, y_test = train_test_split_func(num)
+        x_train, x_test, y_train, y_test = train_test_split_func2(num)
 
         dtr = LinearSVR()
         param = {"epsilon": [0.005, 0.01, 0.02, 0.05, 0.1], 'random_state': [9]}
@@ -106,7 +132,12 @@ def gc_SVM_method():
         print(f'time consuming: {time_consuming:.2f}s')
         print('*' * 30)
 
+        test_result_list.append(gc_y_pred)
+        train_result_list.append(gc_y_pred_train)
+    np.save('output_save/SVM_test_y_pre_daily.npy', np.array(test_result_list))
+    # np.save('output_save/SVM_train_y_pre.npy', np.array(train_result_list))
+
 
 if __name__ == '__main__':
-    # SVM_method()
-    gc_SVM_method()
+    SVM_method()
+    # gc_SVM_method()
