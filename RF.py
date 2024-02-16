@@ -151,7 +151,7 @@ def gc_RF_method():
 
         test_result_list.append(gc_y_pred)
         train_result_list.append(gc_y_pred_train)
-    np.save('output_save/RF_test_y_pre_daily.npy', np.array(test_result_list))
+    np.save('output_save/RF_test_y_pre_label_add.npy', np.array(test_result_list))
     # np.save('output_save/RF_train_y_pre.npy', np.array(train_result_list))
 
 
