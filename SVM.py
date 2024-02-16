@@ -120,7 +120,7 @@ def gc_SVM_method():
     for num in range(14):
         start_time = time.time()
         print(f'The SVM result of num{num + 1}:')
-        x_train, x_test, y_train, y_test = train_test_split_func2(num)
+        x_train, x_test, y_train, y_test = train_test_split_func(num)
 
         dtr = LinearSVR()
         param = {"epsilon": [0.005, 0.01, 0.02, 0.05, 0.1], 'random_state': [9]}
