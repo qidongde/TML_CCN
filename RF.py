@@ -13,6 +13,18 @@ import math
 import time
 
 
+def adj_label(year):
+    if year <= 2015:
+        label = 1
+    elif year <= 2018:
+        label = 2
+    elif year <= 2020:
+        label = 3
+    else:
+        label = 4
+    return label
+
+
 def train_test_split_func(num):
     # load raw data
     filename = 'data_aggregation_final_valid'
@@ -27,7 +39,10 @@ def train_test_split_func(num):
 
     x_data_sum = np.concatenate((input_final_ave, input_final_ave_weight, input_final_last_merra,
                                  input_final_last_with_local), axis=2)
-    x_data_chosen = x_data_sum[:, :, num]
+    # add one label feature
+    label_gen = np.vectorize(adj_label)
+    add_label = label_gen(time_traj[:, 0]).reshape(-1, 1)
+    x_data_chosen = np.concatenate((x_data_sum[:, :, num], add_label), axis=1)
     # x_data_chosen = input_final_ave_weight[:, :, 5]
     # x_data_chosen = input_final_last_with_local
 
@@ -102,20 +117,20 @@ def RF_method():
 def gc_RF_method():
     test_result_list = []
     train_result_list = []
-    for num in range(6):
+    for num in range(14):
         start_time = time.time()
         print(f'The RF result of num{num + 1}:')
-        x_train, x_test, y_train, y_test = train_test_split_func2(num)
+        x_train, x_test, y_train, y_test = train_test_split_func(num)
 
         dtr = RandomForestRegressor()
-        param = {"n_estimators": [6, 12, 25, 50, 100], "max_depth": [3, 5, 7, 9, 11, 13], "random_state": [9],
+        param = {"n_estimators": [6, 12, 25, 50, 100], "max_depth": [3, 5, 7, 9, 11, 13, 15], "random_state": [9],
                  'n_jobs': [-1]}
         gc = GridSearchCV(dtr, param_grid=param, cv=2)
         gc.fit(x_train, y_train)
         print("best_estimator_: ", gc.best_estimator_)
 
         gc_y_pred = gc.predict(x_test)
-        print(gc_y_pred)
+        # print(gc_y_pred)
         test_rmse = np.sqrt(mean_squared_error(y_test, gc_y_pred))
         print('test_RMSE: ', test_rmse)
         # test_r2score = r2_score(y_test, gc_y_pred)
