@@ -13,6 +13,18 @@ import math
 import time
 
 
+def adj_label(year):
+    if year <= 2015:
+        label = 1
+    elif year <= 2018:
+        label = 2
+    elif year <= 2020:
+        label = 3
+    else:
+        label = 4
+    return label
+
+
 def train_test_split_func(num):
     # load raw data
     filename = 'data_aggregation_final_valid'
@@ -27,7 +39,11 @@ def train_test_split_func(num):
 
     x_data_sum = np.concatenate((input_final_ave, input_final_ave_weight, input_final_last_merra,
                                  input_final_last_with_local), axis=2)
-    x_data_chosen = x_data_sum[:, :, num]
+
+    # add one label feature
+    label_gen = np.vectorize(adj_label)
+    add_label = label_gen(time_traj[:, 0]).reshape(-1, 1)
+    x_data_chosen = np.concatenate((x_data_sum[:, :, num], add_label), axis=1)
     # x_data_chosen = input_final_ave_weight[:, :, 5]
     # x_data_chosen = input_final_last_with_local
 
@@ -71,10 +87,10 @@ def train_test_split_func2(num):
 
 
 def XGB_method():
-    for num in range(6):
+    for num in range(14):
         start_time = time.time()
         print(f'The XGBoost result of num{num + 1}:')
-        x_train, x_test, y_train, y_test = train_test_split_func2(num)
+        x_train, x_test, y_train, y_test = train_test_split_func(num)
 
         xgbr = xgb.XGBRegressor(objective='reg:squarederror')
         xgbr.fit(x_train, y_train)
@@ -103,7 +119,7 @@ def clf_XGB_method():
     for num in range(6):
         start_time = time.time()
         print(f'The XGBoost result of num{num + 1}:')
-        x_train, x_test, y_train, y_test = train_test_split_func2(num)
+        x_train, x_test, y_train, y_test = train_test_split_func(num)
 
         params = {'max_depth': [3, 6, 10],
                   'learning_rate': [0.01, 0.05, 0.1],
@@ -136,7 +152,7 @@ def clf_XGB_method():
 
         test_result_list.append(xgbr_y_pred)
         train_result_list.append(xgbr_y_pred_train)
-    np.save('output_save/XGBoost_test_y_pre_daily.npy', np.array(test_result_list))
+    np.save('output_save/XGBoost_test_y_pre_label_add.npy', np.array(test_result_list))
     # np.save('output_save/XGBoost_train_y_pre.npy', np.array(train_result_list))
 
 
