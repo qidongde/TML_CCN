@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 
 from sklearn.preprocessing import StandardScaler
-import xgboost as xgb
+from sklearn.svm import LinearSVR
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import r2_score
@@ -70,25 +70,27 @@ def train_test_split_func2(num):
     return x_train, x_test, y_train, y_test
 
 
-def XGB_method():
+def SVM_method():
     for num in range(6):
         start_time = time.time()
-        print(f'The XGBoost result of num{num + 1}:')
+        print(f'The SVM result of num{num + 1}:')
         x_train, x_test, y_train, y_test = train_test_split_func2(num)
 
-        xgbr = xgb.XGBRegressor(objective='reg:squarederror')
-        xgbr.fit(x_train, y_train)
+        svr = LinearSVR(epsilon=0.05, random_state=9, max_iter=20000)
+        svr.fit(x_train, y_train)
 
-        xgbr_y_pred = xgbr.predict(x_test)
-        test_rmse = np.sqrt(mean_squared_error(y_test, xgbr_y_pred))
+        svr_y_pred = svr.predict(x_test)
+        test_rmse = np.sqrt(mean_squared_error(y_test, svr_y_pred))
         print('test_RMSE: ', test_rmse)
-        test_r2score = math.pow(pearsonr(y_test, xgbr_y_pred)[0], 2)
+        # test_r2score = r2_score(y_test, svr_y_pred)
+        test_r2score = math.pow(pearsonr(y_test, svr_y_pred)[0], 2)
         print('test_r2: ', test_r2score)
 
-        xgbr_y_pred_train = xgbr.predict(x_train)
-        train_rmse = np.sqrt(mean_squared_error(y_train, xgbr_y_pred_train))
+        svr_y_pred_train = svr.predict(x_train)
+        train_rmse = np.sqrt(mean_squared_error(y_train, svr_y_pred_train))
         print('train_RMSE: ', train_rmse)
-        train_r2score = math.pow(pearsonr(y_train, xgbr_y_pred_train)[0], 2)
+        # train_r2score = r2_score(y_train, svr_y_pred_train)
+        train_r2score = math.pow(pearsonr(y_train, svr_y_pred_train)[0], 2)
         print('train_r2: ', train_r2score)
 
         end_time = time.time()
@@ -97,49 +99,45 @@ def XGB_method():
         print('*' * 30)
 
 
-def clf_XGB_method():
+def gc_SVM_method():
     test_result_list = []
     train_result_list = []
     for num in range(6):
         start_time = time.time()
-        print(f'The XGBoost result of num{num + 1}:')
+        print(f'The SVM result of num{num + 1}:')
         x_train, x_test, y_train, y_test = train_test_split_func2(num)
 
-        params = {'max_depth': [3, 6, 10],
-                  'learning_rate': [0.01, 0.05, 0.1],
-                  'n_estimators': [100, 500, 600, 700, 800, 1000],
-                  'colsample_bytree': [0.3, 0.7]}
-        xgbr = xgb.XGBRegressor(seed=20)
-        clf = GridSearchCV(estimator=xgbr,
-                           param_grid=params,
-                           scoring='neg_mean_squared_error',
-                           verbose=1)
-        clf.fit(x_train, y_train)
-        print("Best parameters:", clf.best_params_)
+        dtr = LinearSVR()
+        param = {"epsilon": [0.005, 0.01, 0.02, 0.05, 0.1], 'random_state': [9]}
+        gc = GridSearchCV(dtr, param_grid=param, cv=2)
+        gc.fit(x_train, y_train)
+        print("best_estimator_: ", gc.best_estimator_)
 
-        xgbr_y_pred = clf.predict(x_test)
-        test_rmse = np.sqrt(mean_squared_error(y_test, xgbr_y_pred))
+        gc_y_pred = gc.predict(x_test)
+        test_rmse = np.sqrt(mean_squared_error(y_test, gc_y_pred))
         print('test_RMSE: ', test_rmse)
-        test_r2score = math.pow(pearsonr(y_test, xgbr_y_pred)[0], 2)
+        # test_r2score = r2_score(y_test, gc_y_pred)
+        test_r2score = math.pow(pearsonr(y_test, gc_y_pred)[0], 2)
         print('test_r2: ', test_r2score)
 
-        xgbr_y_pred_train = clf.predict(x_train)
-        train_rmse = np.sqrt(mean_squared_error(y_train, xgbr_y_pred_train))
+        gc_y_pred_train = gc.predict(x_train)
+        train_rmse = np.sqrt(mean_squared_error(y_train, gc_y_pred_train))
         print('train_RMSE: ', train_rmse)
-        train_r2score = math.pow(pearsonr(y_train, xgbr_y_pred_train)[0], 2)
+        # train_r2score = r2_score(y_train, gc_y_pred_train)
+        train_r2score = math.pow(pearsonr(y_train, gc_y_pred_train)[0], 2)
         print('train_r2: ', train_r2score)
 
         end_time = time.time()
         time_consuming = end_time - start_time
         print(f'time consuming: {time_consuming:.2f}s')
-        print('*' * 50)
+        print('*' * 30)
 
-        test_result_list.append(xgbr_y_pred)
-        train_result_list.append(xgbr_y_pred_train)
-    np.save('output_save/XGBoost_test_y_pre_daily.npy', np.array(test_result_list))
-    # np.save('output_save/XGBoost_train_y_pre.npy', np.array(train_result_list))
+        test_result_list.append(gc_y_pred)
+        train_result_list.append(gc_y_pred_train)
+    np.save('output_save/SVM_test_y_pre_daily.npy', np.array(test_result_list))
+    # np.save('output_save/SVM_train_y_pre.npy', np.array(train_result_list))
 
 
 if __name__ == '__main__':
-    # XGB_method()
-    clf_XGB_method()
+    SVM_method()
+    # gc_SVM_method()
